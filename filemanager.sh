@@ -22,17 +22,9 @@ read x
 case $x in
 1) read -p "Enter new file name: " newFileName
    touch $newFileName
-   read -p "Do you want to give this file write permission? (y / n) " permission
-   if [ $permission == "y" ]; then
-   	chmod +w $newFileName
-	chmod +r $newFileName
-   	echo "File $newFileName created"
-   elif [ $permission == "n" ]; then
-		continue
-   else
-	echo "Invalid Input"
-        exit 0
-   fi
+   chmod +w $newFileName
+   chmod +r $newFileName
+   echo "File $newFileName created"
    ;;
 2) read -p "Enter file name: " fileName
    if [ -e $fileName ]; then
@@ -72,6 +64,11 @@ case $x in
    fi
    ;;
 6) read -p "Enter the name of the file to edit " filename
+   if [[ ! -e $filename ]]
+   then
+   	echo "File doesn't exist!"
+   	continue
+   fi
    echo "Be prepared! An editor will open. There are help instructions in the editor"
    echo "Search online if you get stuck"
    read -p "Press enter to continue"
@@ -108,25 +105,25 @@ case $x in
 	if [[ $choice == "y" ]]
 	then
 		rm -rf $folder
-	else
-		exit
 	fi
+    else
+    	rmdir $folder
     fi
-#    rmdir $folder
-   ;;
+    ;;
 11) read -p "Enter file name you'd like to encrypt: " encryptFile
-   gpg -c $encryptFile
-   rm -rf $encryptFile
-   echo "File successfully encrypted"
-  ;;
-12) read -p "Enter file name you'd like to decrypt: " decryptFile
+    gpg -c $encryptFile
+    rm -rf $encryptFile
+    echo "File successfully encrypted"
+    echo "Encrypted file now has .gpg extension"
+    ;;
+12) read -p "Enter full file name you'd like to decrypt with .gpg extension: " decryptFile
 	if [[ $decryptFile != *".gpg" ]]
 	then
-		echo "Not an encrypted file"
+		echo "Not an encrypted file. File should have .gpg extension."
 		continue
 	fi
     gpg -d $decryptFile > ${decryptFile::-4}
-    echo "File successfully decrypted $decryptFile"
+    echo "File successfully decrypted"
     rm $decryptFile
     ;;
 13) exit 0
